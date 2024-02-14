@@ -42,7 +42,7 @@ pub mod file_details {
                 Err(_e) => 0,
             };
             let humansize = ByteSize::b(size);
-            print!("{:10}\t{}\t", size, humansize.to_string_as(false));
+            print!("{:10}\t{:10}\t", size, humansize.to_string_as(false));
         }
 
         fn print_name(&self, path: &Path, filename: &String) {
