@@ -32,4 +32,10 @@ cargo build --release --bin lift
 - add option --depth?
 - try multithread + queue?
 - Windows vs Linux -> still OK?
+- handle permission denied
 
+```text
+thread 'main' panicked at src/lift.rs:24:52:
+called `Result::unwrap()` on an `Err` value: Os { code: 13, kind: PermissionDenied, message: "Permission denied" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+```

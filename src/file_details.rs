@@ -45,11 +45,31 @@ pub mod file_details {
             print!("{:10}\t{:10}\t", size, humansize.to_string_as(false));
         }
 
-        fn print_name(&self, path: &Path, filename: &String) {
+        fn print_name_file(&self, path: &Path, filename: &String, shortname: bool) {
+            // let's consider it is a file (no specific code dedicated to symlink yet)
+            if !shortname || filename.len() <= 20 {
+                print!("{}", filename);
+            } else {
+                let stem = path.file_stem().unwrap().to_str().unwrap();
+                if stem.len() > 20 {
+                    if path.parent().is_some() {
+                        print!("{}/", path.parent().unwrap().to_str().unwrap());
+                    }
+                    print!("{}**", &stem[0..8]);
+                    if path.extension().is_some() {
+                        print!(".{}", path.extension().unwrap().to_str().unwrap())
+                    }
+                } else {
+                    print!("{}", filename);
+                }
+            }
+        }
+
+        fn print_name(&self, path: &Path, filename: &String, shortname: bool) {
             if path.is_dir() {
                 print!("{}", filename.blue());
             } else {
-                print!("{}", filename);
+                self.print_name_file(path, filename, shortname);
             }
         }
 
@@ -69,12 +89,12 @@ pub mod file_details {
             }
         }
 
-        pub fn show(&self, filename: &String, recursive: bool) {
+        pub fn show(&self, filename: &String, recursive: bool, shortname: bool) {
             let path = Path::new(filename);
             if path.exists() {
                 self.print_type(path);
                 self.print_size(path);
-                self.print_name(path, filename);
+                self.print_name(path, filename, shortname);
                 self.print_magic(filename);
                 println!();
                 if recursive && path.is_dir() {
@@ -83,7 +103,7 @@ pub mod file_details {
                     paths.sort_by_key(|entry| entry.path());
                     for path in paths {
                         let p = format!("{}", path.path().display());
-                        self.show(&p, recursive);
+                        self.show(&p, recursive, shortname);
                     }
                 }
             } else {

@@ -8,6 +8,9 @@ struct Args {
     #[arg(short, long, default_value_t = false)]
     recursive: bool,
 
+    #[arg(short, long, default_value_t = false)]
+    shortname: bool,
+
     #[arg(num_args(0..))]
     paths: Option<Vec<String>>,
 }
@@ -18,14 +21,14 @@ pub fn main() {
     let fd = FileDetails::new();
     if let Some(paths) = args.paths {
         for p in paths.iter() {
-            fd.show(p, args.recursive);
+            fd.show(p, args.recursive, args.shortname);
         }
     } else {
         let mut paths: Vec<_> = fs::read_dir("./").unwrap().map(|r| r.unwrap()).collect();
         paths.sort_by_key(|entry| entry.path());
         for path in paths {
             let p = format!("{}", path.path().display());
-            fd.show(&p, args.recursive);
+            fd.show(&p, args.recursive, args.shortname);
         }
     }
 }
